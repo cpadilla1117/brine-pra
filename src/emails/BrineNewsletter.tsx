@@ -232,7 +232,7 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
           </div>
 
           {/* ====== STAT BAR ====== */}
-          <div style={{ background: "#F5F5F7", padding: "20px 48px", borderBottom: "1px solid #E8E8ED" }}>
+          <div style={{ background: "#F5F5F7", padding: "24px 48px", borderBottom: "1px solid #E8E8ED" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <tbody>
                 <tr>
@@ -256,7 +256,7 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
                   <th style={thStyle}>Basin</th>
                   <th style={thStyle}>Grade</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>$/BBL</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>vs last week</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Chg</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Volume</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Contributors</th>
                 </tr>
@@ -272,7 +272,7 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
                         {row.thin ? (
                           <span style={{ fontSize: "12px", color: "#AEAEB2", fontStyle: "italic" }}>Not enough data this week</span>
                         ) : (
-                          <span style={{ fontFamily: mono, fontSize: "16px", fontWeight: 600, color: "#1D1D1F" }}>${row.vwap?.toFixed(2)}</span>
+                          <span style={{ fontFamily: mono, fontSize: "15px", fontWeight: 600, color: "#1D1D1F" }}>${row.vwap?.toFixed(2)}</span>
                         )}
                       </td>
                       <td style={{ ...tdBase, textAlign: "right" }}>
@@ -337,7 +337,7 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
                       </td>
                       <td style={{ textAlign: "right", verticalAlign: "top" }}>
                         <div style={{ fontSize: "12px", color: "#AEAEB2" }}>{deal.basin}</div>
-                        <div style={{ fontFamily: mono, fontSize: "14px", color: "#1D1D1F", fontWeight: 500, marginTop: "2px" }}>{deal.volume_bbl_per_day.toLocaleString()} BBL/d</div>
+                        <div style={{ fontFamily: mono, fontSize: "14px", color: "#1D1D1F", fontWeight: 500, marginTop: "2px" }}>{formatVolume(deal.volume_bbl_per_day)}</div>
                         <div style={{ fontSize: "11px", color: "#AEAEB2", marginTop: "2px" }}>Week of {deal.week_of}</div>
                       </td>
                     </tr>
@@ -469,10 +469,10 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function StatBox({ label, value, context, border }: { label: string; value: string; context: string; border?: boolean }) {
   return (
-    <td style={{ verticalAlign: "top", paddingRight: border ? "32px" : "0", borderRight: border ? "1px solid #E8E8ED" : "none" }}>
-      <div style={{ fontSize: "10px", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.08em", color: "#AEAEB2", marginBottom: "6px" }}>{label}</div>
-      <div style={{ fontFamily: mono, fontSize: "24px", fontWeight: 300, color: "#1D1D1F" }}>{value}</div>
-      <div style={{ fontSize: "11px", color: "#AEAEB2", marginTop: "4px" }}>{context}</div>
+    <td style={{ verticalAlign: "top", paddingRight: border ? "40px" : "0", borderRight: border ? "1px solid #E8E8ED" : "none", minWidth: "120px" }}>
+      <div style={{ fontSize: "10px", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.08em", color: "#AEAEB2", whiteSpace: "nowrap" }}>{label}</div>
+      <div style={{ fontFamily: mono, fontSize: "22px", fontWeight: 300, color: "#1D1D1F", whiteSpace: "nowrap", lineHeight: "1.1", margin: "6px 0 4px" }}>{value}</div>
+      <div style={{ fontSize: "11px", color: "#AEAEB2", whiteSpace: "nowrap" }}>{context}</div>
     </td>
   );
 }
