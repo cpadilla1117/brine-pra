@@ -237,8 +237,8 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
               <tbody>
                 <tr>
                   <StatBox label="BASINS ACTIVE" value={String(basinsCovered)} context="publishing this week" border />
-                  <StatBox label="AVG FRAC-READY" value={`$${avgFracReady.toFixed(2)}`} context="volume-weighted avg" border />
-                  <StatBox label="TOTAL VOLUME" value={formatVolumeTotal(totalVolume)} context="across all active basins" border />
+                  <StatBox label="AVG FRAC-READY" value={`$${avgFracReady.toFixed(2)}`} context="volume-weighted avg" border price />
+                  <StatBox label="TOTAL VOLUME" value={formatVolumeTotal(totalVolume)} context="across all active basins" border volume />
                   <StatBox label="CONTRIBUTORS" value={String(totalReporters)} context="operators reporting" />
                 </tr>
               </tbody>
@@ -467,11 +467,21 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function StatBox({ label, value, context, border }: { label: string; value: string; context: string; border?: boolean }) {
+function StatBox({ label, value, context, border, price, volume }: { label: string; value: string; context: string; border?: boolean; price?: boolean; volume?: boolean }) {
+  const isCompact = price || volume;
   return (
     <td style={{ verticalAlign: "top", paddingRight: border ? "40px" : "0", borderRight: border ? "1px solid #E8E8ED" : "none", minWidth: "120px" }}>
       <div style={{ fontSize: "10px", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.08em", color: "#AEAEB2", whiteSpace: "nowrap" }}>{label}</div>
-      <div style={{ fontFamily: mono, fontSize: "22px", fontWeight: 300, color: "#1D1D1F", whiteSpace: "nowrap", lineHeight: "1.1", margin: "6px 0 4px" }}>{value}</div>
+      <div style={{
+        fontFamily: price ? mono : sans,
+        fontSize: isCompact ? "26px" : "32px",
+        fontWeight: price ? 300 : 200,
+        color: "#1D1D1F",
+        letterSpacing: price ? "-0.01em" : volume ? "-0.02em" : "-0.03em",
+        lineHeight: "1",
+        margin: "6px 0 4px",
+        whiteSpace: "nowrap",
+      }}>{value}</div>
       <div style={{ fontSize: "11px", color: "#AEAEB2", whiteSpace: "nowrap" }}>{context}</div>
     </td>
   );
