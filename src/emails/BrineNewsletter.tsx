@@ -1,7 +1,7 @@
 import { Html, Head, Body } from "@react-email/components";
 import * as React from "react";
 import type { BrineNewsletterData, GradeIndex } from "@/lib/newsletter-mock-data";
-import { formatVolume, formatVolumeTotal } from "@/lib/format-helpers";
+import { formatVolume, formatVolumeTotal, formatVolumeShort } from "@/lib/format-helpers";
 
 /* ============================================================
    HELPERS
@@ -250,15 +250,15 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
 
             {/* ====== PRICE INDEX ====== */}
             <SectionLabel>Price Index</SectionLabel>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
               <thead>
                 <tr>
-                  <th style={thStyle}>Basin</th>
-                  <th style={thStyle}>Grade</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>$/BBL</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Chg</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Volume</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Contributors</th>
+                  <th style={{ ...thStyle, width: "18%" }}>Basin</th>
+                  <th style={{ ...thStyle, width: "18%" }}>Grade</th>
+                  <th style={{ ...thStyle, width: "14%", textAlign: "right" }}>$/BBL</th>
+                  <th style={{ ...thStyle, width: "12%", textAlign: "right" }}>Chg</th>
+                  <th style={{ ...thStyle, width: "28%", textAlign: "right" }}>Volume (BBL/d)</th>
+                  <th style={{ ...thStyle, width: "10%", textAlign: "right" }}>Rep.</th>
                 </tr>
               </thead>
               <tbody>
@@ -278,8 +278,8 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
                       <td style={{ ...tdBase, textAlign: "right" }}>
                         {row.thin ? <span style={{ color: "#AEAEB2" }}>—</span> : deltaDisplay(row.delta)}
                       </td>
-                      <td style={{ ...tdBase, textAlign: "right", fontFamily: sans, fontSize: "13px", fontWeight: 400, color: "#6E6E73" }}>
-                        {row.thin ? <span style={{ color: "#AEAEB2" }}>—</span> : formatVolume(row.volume_bbl_per_day ?? 0)}
+                      <td style={{ ...tdBase, textAlign: "right", fontFamily: sans, fontSize: "13px", fontWeight: 400, color: "#6E6E73", whiteSpace: "nowrap" }}>
+                        {row.thin ? <span style={{ color: "#AEAEB2" }}>—</span> : formatVolumeShort(row.volume_bbl_per_day ?? 0)}
                       </td>
                       <td style={{ ...tdBase, textAlign: "right", fontSize: "13px", color: "#AEAEB2" }}>
                         {row.reporter_count}
