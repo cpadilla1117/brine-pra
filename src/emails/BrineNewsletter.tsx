@@ -154,26 +154,26 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
           </div>
 
           {/* ====== STAT BAR ====== */}
-          <div style={{ background: "#F5F5F7", padding: "24px 48px", borderBottom: "1px solid #E8E8ED" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <div style={{ background: "#F5F5F7", padding: "20px 32px", borderBottom: "1px solid #E8E8ED" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
               <tbody><tr>
-                <td style={{ verticalAlign: "top", width: "25%", paddingRight: "16px" }}>
+                <td style={{ verticalAlign: "top", width: "22%", paddingRight: "12px" }}>
                   <div style={statLabel}>BASINS</div>
                   <div style={statValue}>{basinsCovered}</div>
                   <div style={statContext}>publishing</div>
                 </td>
-                <td style={{ verticalAlign: "top", width: "25%", paddingRight: "16px", borderLeft: "1px solid #E8E8ED", paddingLeft: "16px" }}>
+                <td style={{ verticalAlign: "top", width: "26%", paddingLeft: "12px", paddingRight: "12px", borderLeft: "1px solid #E8E8ED" }}>
                   <div style={statLabel}>AVG FR</div>
                   <div style={statValue}>${avgFracReady.toFixed(2)}</div>
                   <div style={statContext}>Frac-Ready</div>
                 </td>
-                <td style={{ verticalAlign: "top", width: "25%", paddingRight: "16px", borderLeft: "1px solid #E8E8ED", paddingLeft: "16px" }}>
+                <td style={{ verticalAlign: "top", width: "30%", paddingLeft: "12px", paddingRight: "12px", borderLeft: "1px solid #E8E8ED" }}>
                   <div style={statLabel}>VOLUME</div>
                   <div style={statValue}>{formatVolumeShort(totalVolume)}</div>
                   <div style={statContext}>BBL/d total</div>
                 </td>
-                <td style={{ verticalAlign: "top", width: "25%", borderLeft: "1px solid #E8E8ED", paddingLeft: "16px" }}>
-                  <div style={statLabel}>REPORTERS</div>
+                <td style={{ verticalAlign: "top", width: "22%", paddingLeft: "12px", borderLeft: "1px solid #E8E8ED" }}>
+                  <div style={statLabel}>REP.</div>
                   <div style={statValue}>{totalReporters}</div>
                   <div style={statContext}>operators</div>
                 </td>
@@ -367,7 +367,7 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
 /* ---- helper components & styles ---- */
 
 const statLabel: React.CSSProperties = { fontSize: "10px", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.08em", color: "#AEAEB2", whiteSpace: "nowrap" };
-const statValue: React.CSSProperties = { fontFamily: "system-ui, -apple-system, sans-serif", fontSize: "28px", fontWeight: 300, color: "#1D1D1F", lineHeight: "1", margin: "6px 0 4px", whiteSpace: "nowrap" };
+const statValue: React.CSSProperties = { fontFamily: "system-ui, -apple-system, sans-serif", fontSize: "24px", fontWeight: 300, color: "#1D1D1F", lineHeight: "1", margin: "6px 0 4px", whiteSpace: "nowrap" };
 const statContext: React.CSSProperties = { fontSize: "11px", color: "#AEAEB2", whiteSpace: "nowrap" };
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
