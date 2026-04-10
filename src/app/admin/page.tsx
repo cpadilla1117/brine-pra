@@ -14,35 +14,52 @@ const FracReadyChart = dynamic(() => import("@/components/FracReadyChart"), {
   ssr: false,
 });
 
-function gradeColor(grade: string) {
+function gradeStyle(grade: string) {
   switch (grade) {
     case "Basic":
-      return "text-accent-basic border-accent-basic/30 bg-accent-basic/10";
+      return { bg: "#FEF3E2", color: "#7A4100", border: "#FAC775" };
     case "Secondary":
-      return "text-accent-secondary border-accent-secondary/30 bg-accent-secondary/10";
+      return { bg: "#E8F1FB", color: "#0C447C", border: "#B5D4F4" };
     case "Frac-Ready":
-      return "text-accent-frac border-accent-frac/30 bg-accent-frac/10";
+      return { bg: "#E1F5EE", color: "#085041", border: "#9FE1CB" };
     default:
-      return "";
+      return { bg: "#F5F5F7", color: "#6E6E73", border: "#E8E8ED" };
   }
 }
 
-function statusColor(status: string) {
+function statusStyle(status: string) {
   switch (status) {
-    case "Draft":
-      return "text-muted-foreground border-border bg-muted";
     case "Submitted":
-      return "text-accent-secondary border-accent-secondary/30 bg-accent-secondary/10";
+      return { bg: "#FFF3E0", color: "#E65100" };
     case "Verified":
-      return "text-accent-green border-accent-green/30 bg-accent-green/10";
+      return { bg: "#E8F5E9", color: "#1B5E20" };
     case "Published":
-      return "text-accent-frac border-accent-frac/30 bg-accent-frac/10";
+      return { bg: "#E3F2FD", color: "#0D47A1" };
+    case "Draft":
+      return { bg: "#F5F5F7", color: "#6E6E73" };
     default:
-      return "";
+      return { bg: "#F5F5F7", color: "#6E6E73" };
   }
 }
 
 type StatusFilter = "all" | "Submitted" | "Verified" | "Published" | "Draft";
+
+const thStyle: React.CSSProperties = {
+  fontSize: "11px",
+  fontWeight: 500,
+  color: "#AEAEB2",
+  textTransform: "uppercase",
+  letterSpacing: "0.06em",
+  padding: "14px 20px",
+  textAlign: "left",
+};
+
+const tdBase: React.CSSProperties = {
+  fontSize: "13px",
+  color: "#1D1D1F",
+  padding: "16px 20px",
+  verticalAlign: "middle",
+};
 
 export default function AdminPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -60,59 +77,28 @@ export default function AdminPage() {
 
   async function loadData() {
     setLoading(true);
-
     if (DEMO) {
       setProfile(DEMO_PROFILE);
-      const filtered =
-        filter === "all"
-          ? DEMO_TRANSACTIONS
-          : DEMO_TRANSACTIONS.filter((t) => t.status === filter);
+      const filtered = filter === "all" ? DEMO_TRANSACTIONS : DEMO_TRANSACTIONS.filter((t) => t.status === filter);
       setTransactions(filtered);
       setLoading(false);
       return;
     }
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-
-    const { data: prof } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
-
+    const { data: prof } = await supabase.from("profiles").select("*").eq("id", user.id).single();
     if (prof) setProfile(prof as Profile);
-
-    if (prof?.role !== "admin") {
-      setLoading(false);
-      return;
-    }
-
-    let query = supabase
-      .from("transactions")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(100);
-
-    if (filter !== "all") {
-      query = query.eq("status", filter);
-    }
-
+    if (prof?.role !== "admin") { setLoading(false); return; }
+    let query = supabase.from("transactions").select("*").order("created_at", { ascending: false }).limit(100);
+    if (filter !== "all") { query = query.eq("status", filter); }
     const { data } = await query;
     if (data) setTransactions(data as Transaction[]);
     setLoading(false);
   }
 
-  async function updateStatus(
-    txId: string,
-    newStatus: "Verified" | "Published" | "Draft"
-  ) {
+  async function updateStatus(txId: string, newStatus: "Verified" | "Published" | "Draft") {
     if (DEMO) {
-      setTransactions((prev) =>
-        prev.map((t) => (t.id === txId ? { ...t, status: newStatus } : t))
-      );
+      setTransactions((prev) => prev.map((t) => (t.id === txId ? { ...t, status: newStatus } : t)));
       return;
     }
     await supabase.from("transactions").update({ status: newStatus } as any).eq("id", txId);
@@ -123,169 +109,142 @@ export default function AdminPage() {
     setIndexRunning(true);
     setIndexResult(null);
     setIndexData(null);
-
     const result = computeBrineIndex();
     setIndexData(result);
-
     const eligible = result.index_rows.length;
     const thinCount = result.index_rows.filter((r) => r.thin).length;
-    setIndexResult(
-      `Index calculated: ${eligible} basin × grade rows (${thinCount} thin market${thinCount !== 1 ? "s" : ""}).`
-    );
+    setIndexResult(`Index calculated: ${eligible} basin × grade rows (${thinCount} thin market${thinCount !== 1 ? "s" : ""}).`);
     setIndexRunning(false);
   }
 
   if (profile && profile.role !== "admin") {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen" style={{ background: "#F5F5F7" }}>
         <Navbar />
-        <main className="max-w-7xl mx-auto px-4 py-16 text-center">
-          <h1 className="text-xl font-semibold text-accent-red">
-            Access Denied
-          </h1>
-          <p className="text-sm text-muted-foreground mt-2">
-            Admin privileges required.
-          </p>
+        <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "64px 32px", textAlign: "center" }}>
+          <h1 style={{ fontSize: "22px", fontWeight: 500, color: "#FF3B30" }}>Access Denied</h1>
+          <p style={{ fontSize: "13px", color: "#6E6E73", marginTop: "8px" }}>Admin privileges required.</p>
         </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ background: "#F5F5F7" }}>
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-8">
+      <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 32px" }}>
+        <div className="flex items-center justify-between" style={{ padding: "40px 0 32px" }}>
           <div>
-            <h1 className="text-xl font-semibold">Admin Panel</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Review submissions and run price index
-            </p>
+            <h1 style={{ fontSize: "28px", fontWeight: 300, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Admin Panel</h1>
+            <p style={{ fontSize: "13px", color: "#6E6E73", marginTop: "4px" }}>Review submissions and run price index</p>
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={runIndexCalculation}
-              disabled={indexRunning}
-              className="px-4 py-2 bg-accent-frac text-background text-sm font-medium rounded hover:opacity-90 transition-opacity disabled:opacity-50"
-            >
-              {indexRunning ? "Calculating..." : "Run Index Calculation"}
-            </button>
-          </div>
+          <button
+            onClick={runIndexCalculation}
+            disabled={indexRunning}
+            style={{
+              padding: "10px 20px",
+              fontSize: "13px",
+              fontWeight: 500,
+              background: "transparent",
+              border: "0.5px solid #1D9E75",
+              color: "#1D9E75",
+              borderRadius: "8px",
+              cursor: "pointer",
+              opacity: indexRunning ? 0.5 : 1,
+            }}
+          >
+            {indexRunning ? "Calculating..." : "Run Index Calculation"}
+          </button>
         </div>
 
         {indexResult && (
-          <div className="mb-6 text-sm px-4 py-3 rounded border border-accent-green/30 bg-accent-green/10 text-accent-green">
+          <div style={{ marginBottom: "24px", fontSize: "13px", padding: "12px 16px", borderRadius: "8px", border: "0.5px solid #9FE1CB", background: "#E8F5E9", color: "#1B5E20" }}>
             {indexResult}
           </div>
         )}
 
         {/* Index Preview Table */}
         {indexData && (
-          <div className="border border-border rounded-lg overflow-hidden mb-8">
-            <div className="px-4 py-3 bg-card border-b border-border">
-              <h2 className="text-sm font-medium">
-                Computed Index — Week of {indexData.week_start}
-              </h2>
+          <div style={{ background: "#FFFFFF", border: "0.5px solid #E8E8ED", borderRadius: "16px", overflow: "hidden", marginBottom: "24px" }}>
+            <div style={{ padding: "14px 20px", background: "#FAFAFA", borderBottom: "0.5px solid #E8E8ED" }}>
+              <h2 style={{ fontSize: "13px", fontWeight: 500, color: "#1D1D1F" }}>Computed Index — Week of {indexData.week_start}</h2>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
-                  <tr className="text-xs text-muted-foreground uppercase tracking-wider border-b border-border">
-                    <th className="px-4 py-2 text-left">Basin</th>
-                    <th className="px-4 py-2 text-left">Grade</th>
-                    <th className="px-4 py-2 text-right">VWAP</th>
-                    <th className="px-4 py-2 text-right">Delta</th>
-                    <th className="px-4 py-2 text-right">Volume</th>
-                    <th className="px-4 py-2 text-right">Reporters</th>
-                    <th className="px-4 py-2 text-left">Flag</th>
+                  <tr style={{ background: "#FAFAFA", borderBottom: "0.5px solid #E8E8ED" }}>
+                    <th style={thStyle}>Basin</th>
+                    <th style={thStyle}>Grade</th>
+                    <th style={{ ...thStyle, textAlign: "right" }}>VWAP</th>
+                    <th style={{ ...thStyle, textAlign: "right" }}>Delta</th>
+                    <th style={{ ...thStyle, textAlign: "right" }}>Volume</th>
+                    <th style={{ ...thStyle, textAlign: "right" }}>Reporters</th>
+                    <th style={thStyle}>Flag</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {indexData.index_rows.map((row, i) => (
-                    <tr
-                      key={`${row.basin}-${row.grade}`}
-                      className={`border-b border-border/50 ${
-                        i % 2 === 0 ? "bg-card/30" : ""
-                      }`}
-                    >
-                      <td className="px-4 py-2.5">{row.basin}</td>
-                      <td className="px-4 py-2.5">
-                        <span
-                          className={`text-xs px-2 py-0.5 rounded border ${gradeColor(
-                            row.grade
-                          )}`}
-                        >
-                          {row.grade}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono">
-                        {row.thin ? (
-                          <span className="text-muted-foreground">—</span>
-                        ) : (
-                          `$${row.vwap?.toFixed(2)}`
-                        )}
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono">
-                        {row.thin || row.delta === null ? (
-                          <span className="text-muted-foreground">—</span>
-                        ) : row.delta > 0 ? (
-                          <span className="text-accent-green">
-                            +${row.delta.toFixed(2)}
-                          </span>
-                        ) : row.delta < 0 ? (
-                          <span className="text-accent-red">
-                            -${Math.abs(row.delta).toFixed(2)}
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground">$0.00</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono">
-                        {row.thin ? (
-                          <span className="text-muted-foreground">—</span>
-                        ) : (
-                          formatVolume(row.volume_bbl_per_day ?? 0)
-                        )}
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono">
-                        {row.reporter_count}
-                      </td>
-                      <td className="px-4 py-2.5">
-                        {row.thin && (
-                          <span className="text-xs px-2 py-0.5 rounded border border-accent-basic/30 bg-accent-basic/10 text-accent-basic">
-                            Thin Market
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                  {indexData.index_rows.map((row) => {
+                    const gs = gradeStyle(row.grade);
+                    return (
+                      <tr key={`${row.basin}-${row.grade}`} style={{ borderBottom: "0.5px solid #F0F0F5" }}>
+                        <td style={tdBase}>{row.basin}</td>
+                        <td style={tdBase}>
+                          <span style={{ fontSize: "11px", fontWeight: 500, padding: "3px 10px", borderRadius: "6px", background: gs.bg, color: gs.color, border: `0.5px solid ${gs.border}` }}>{row.grade}</span>
+                        </td>
+                        <td style={{ ...tdBase, textAlign: "right", fontFamily: "var(--font-geist-mono), monospace" }}>
+                          {row.thin ? <span style={{ color: "#AEAEB2" }}>—</span> : `$${row.vwap?.toFixed(2)}`}
+                        </td>
+                        <td style={{ ...tdBase, textAlign: "right", fontFamily: "var(--font-geist-mono), monospace" }}>
+                          {row.thin || row.delta === null ? (
+                            <span style={{ color: "#AEAEB2" }}>—</span>
+                          ) : row.delta > 0 ? (
+                            <span style={{ color: "#34C759" }}>+${row.delta.toFixed(2)}</span>
+                          ) : row.delta < 0 ? (
+                            <span style={{ color: "#FF3B30" }}>-${Math.abs(row.delta).toFixed(2)}</span>
+                          ) : (
+                            <span style={{ color: "#AEAEB2" }}>$0.00</span>
+                          )}
+                        </td>
+                        <td style={{ ...tdBase, textAlign: "right", fontFamily: "var(--font-geist-mono), monospace" }}>
+                          {row.thin ? <span style={{ color: "#AEAEB2" }}>—</span> : formatVolume(row.volume_bbl_per_day ?? 0)}
+                        </td>
+                        <td style={{ ...tdBase, textAlign: "right", fontFamily: "var(--font-geist-mono), monospace" }}>{row.reporter_count}</td>
+                        <td style={tdBase}>
+                          {row.thin && (
+                            <span style={{ fontSize: "11px", fontWeight: 500, padding: "3px 10px", borderRadius: "6px", background: "#FFF3E0", color: "#E65100" }}>Thin Market</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           </div>
         )}
 
-        {/* 12-month Frac-Ready trend chart */}
-        <div className="mb-8">
+        {/* Chart */}
+        <div style={{ marginBottom: "24px" }}>
           <FracReadyChart />
         </div>
 
         {/* Status Filter */}
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-xs text-muted-foreground uppercase tracking-wider">
-            Filter:
-          </span>
-          {(
-            ["all", "Submitted", "Verified", "Published", "Draft"] as const
-          ).map((s) => (
+        <div className="flex items-center gap-2" style={{ marginBottom: "16px" }}>
+          <span style={{ fontSize: "11px", fontWeight: 500, color: "#AEAEB2", textTransform: "uppercase", letterSpacing: "0.06em" }}>Filter:</span>
+          {(["all", "Submitted", "Verified", "Published", "Draft"] as const).map((s) => (
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`px-3 py-1 text-xs rounded border transition-colors ${
-                filter === s
-                  ? "bg-muted text-foreground border-border"
-                  : "text-muted-foreground border-transparent hover:text-foreground"
-              }`}
+              style={{
+                padding: "6px 12px",
+                fontSize: "13px",
+                borderRadius: "6px",
+                border: filter === s ? "0.5px solid #E8E8ED" : "0.5px solid transparent",
+                background: filter === s ? "#FFFFFF" : "transparent",
+                color: filter === s ? "#1D1D1F" : "#6E6E73",
+                fontWeight: filter === s ? 500 : 400,
+                cursor: "pointer",
+              }}
             >
               {s === "all" ? "All" : s}
             </button>
@@ -293,116 +252,73 @@ export default function AdminPage() {
         </div>
 
         {/* Submissions Table */}
-        <div className="border border-border rounded-lg overflow-hidden">
-          <div className="px-4 py-3 bg-card border-b border-border flex items-center justify-between">
-            <h2 className="text-sm font-medium">All Submissions</h2>
-            <span className="text-xs text-muted-foreground">
-              {transactions.length} results
-            </span>
+        <div style={{ background: "#FFFFFF", border: "0.5px solid #E8E8ED", borderRadius: "16px", overflow: "hidden" }}>
+          <div className="flex items-center justify-between" style={{ padding: "14px 20px", background: "#FAFAFA", borderBottom: "0.5px solid #E8E8ED" }}>
+            <h2 style={{ fontSize: "13px", fontWeight: 500, color: "#1D1D1F" }}>All Submissions</h2>
+            <span style={{ fontSize: "11px", color: "#AEAEB2" }}>{transactions.length} results</span>
           </div>
           {loading ? (
-            <div className="px-4 py-12 text-center text-sm text-muted-foreground">
-              Loading...
-            </div>
+            <div style={{ padding: "48px 20px", textAlign: "center", fontSize: "13px", color: "#AEAEB2" }}>Loading...</div>
           ) : transactions.length === 0 ? (
-            <div className="px-4 py-12 text-center text-sm text-muted-foreground">
-              No transactions match this filter.
-            </div>
+            <div style={{ padding: "48px 20px", textAlign: "center", fontSize: "13px", color: "#AEAEB2" }}>No transactions match this filter.</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
-                  <tr className="text-xs text-muted-foreground uppercase tracking-wider border-b border-border">
-                    <th className="px-4 py-2 text-left">Date</th>
-                    <th className="px-4 py-2 text-left">Seller</th>
-                    <th className="px-4 py-2 text-left">Basin</th>
-                    <th className="px-4 py-2 text-left">Grade</th>
-                    <th className="px-4 py-2 text-left">Type</th>
-                    <th className="px-4 py-2 text-right">Vol</th>
-                    <th className="px-4 py-2 text-right">$/BBL</th>
-                    <th className="px-4 py-2 text-right">TDS</th>
-                    <th className="px-4 py-2 text-left">Status</th>
-                    <th className="px-4 py-2 text-right">Actions</th>
+                  <tr style={{ background: "#FAFAFA", borderBottom: "0.5px solid #E8E8ED" }}>
+                    <th style={thStyle}>Date</th>
+                    <th style={thStyle}>Seller</th>
+                    <th style={thStyle}>Basin</th>
+                    <th style={thStyle}>Grade</th>
+                    <th style={thStyle}>Type</th>
+                    <th style={{ ...thStyle, textAlign: "right" }}>Vol</th>
+                    <th style={{ ...thStyle, textAlign: "right" }}>$/BBL</th>
+                    <th style={{ ...thStyle, textAlign: "right" }}>TDS</th>
+                    <th style={thStyle}>Status</th>
+                    <th style={{ ...thStyle, textAlign: "right" }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {transactions.map((tx) => (
-                    <tr
-                      key={tx.id}
-                      className="border-b border-border/50 hover:bg-card/50 transition-colors"
-                    >
-                      <td className="px-4 py-2.5 font-mono text-xs">
-                        {tx.transaction_date_start}
-                      </td>
-                      <td className="px-4 py-2.5 text-xs truncate max-w-[120px]">
-                        {tx.seller_name}
-                      </td>
-                      <td className="px-4 py-2.5">{tx.basin}</td>
-                      <td className="px-4 py-2.5">
-                        <span
-                          className={`text-xs px-2 py-0.5 rounded border ${gradeColor(
-                            tx.water_grade
-                          )}`}
-                        >
-                          {tx.water_grade}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2.5 text-muted-foreground">
-                        {tx.transaction_type}
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono">
-                        {formatVolume(tx.volume_bbl_per_day)}
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono">
-                        ${Number(tx.price_per_bbl).toFixed(4)}
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono">
-                        {Number(tx.tds_ppm).toLocaleString()}
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <span
-                          className={`text-xs px-2 py-0.5 rounded border ${statusColor(
-                            tx.status
-                          )}`}
-                        >
-                          {tx.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2.5 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          {tx.status === "Submitted" && (
-                            <button
-                              onClick={() => updateStatus(tx.id, "Verified")}
-                              className="text-xs px-2 py-1 rounded text-accent-green hover:bg-accent-green/10 transition-colors"
-                            >
-                              Verify
-                            </button>
-                          )}
-                          {tx.status === "Verified" && (
-                            <button
-                              onClick={() => updateStatus(tx.id, "Published")}
-                              className="text-xs px-2 py-1 rounded text-accent-frac hover:bg-accent-frac/10 transition-colors"
-                            >
-                              Publish
-                            </button>
-                          )}
-                          {tx.status !== "Draft" && (
-                            <button
-                              onClick={() => updateStatus(tx.id, "Draft")}
-                              className="text-xs px-2 py-1 rounded text-muted-foreground hover:bg-muted transition-colors"
-                            >
-                              Reject
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {transactions.map((tx) => {
+                    const gs = gradeStyle(tx.water_grade);
+                    const ss = statusStyle(tx.status);
+                    return (
+                      <tr key={tx.id} style={{ borderBottom: "0.5px solid #F0F0F5" }} onMouseEnter={(e) => (e.currentTarget.style.background = "#F5F5F7")} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+                        <td style={{ ...tdBase, fontFamily: "var(--font-geist-mono), monospace", fontSize: "12px", color: "#6E6E73" }}>{tx.transaction_date_start}</td>
+                        <td style={{ ...tdBase, fontSize: "12px", fontWeight: 500 }}>{tx.seller_name}</td>
+                        <td style={tdBase}>{tx.basin}</td>
+                        <td style={tdBase}>
+                          <span style={{ fontSize: "11px", fontWeight: 500, padding: "3px 10px", borderRadius: "6px", background: gs.bg, color: gs.color, border: `0.5px solid ${gs.border}` }}>{tx.water_grade}</span>
+                        </td>
+                        <td style={{ ...tdBase, color: "#6E6E73" }}>{tx.transaction_type}</td>
+                        <td style={{ ...tdBase, textAlign: "right", fontFamily: "var(--font-geist-mono), monospace" }}>{formatVolume(tx.volume_bbl_per_day)}</td>
+                        <td style={{ ...tdBase, textAlign: "right", fontFamily: "var(--font-geist-mono), monospace", fontWeight: 500 }}>${Number(tx.price_per_bbl).toFixed(4)}</td>
+                        <td style={{ ...tdBase, textAlign: "right", fontFamily: "var(--font-geist-mono), monospace", fontSize: "12px", color: "#6E6E73" }}>{Number(tx.tds_ppm).toLocaleString()}</td>
+                        <td style={tdBase}>
+                          <span style={{ fontSize: "11px", fontWeight: 500, padding: "3px 10px", borderRadius: "6px", background: ss.bg, color: ss.color }}>{tx.status}</span>
+                        </td>
+                        <td style={{ ...tdBase, textAlign: "right" }}>
+                          <div className="flex items-center justify-end gap-1">
+                            {tx.status === "Submitted" && (
+                              <button onClick={() => updateStatus(tx.id, "Verified")} style={{ fontSize: "12px", padding: "4px 10px", borderRadius: "6px", color: "#1B5E20", background: "transparent", border: "none", cursor: "pointer" }}>Verify</button>
+                            )}
+                            {tx.status === "Verified" && (
+                              <button onClick={() => updateStatus(tx.id, "Published")} style={{ fontSize: "12px", padding: "4px 10px", borderRadius: "6px", color: "#0D47A1", background: "transparent", border: "none", cursor: "pointer" }}>Publish</button>
+                            )}
+                            {tx.status !== "Draft" && (
+                              <button onClick={() => updateStatus(tx.id, "Draft")} style={{ fontSize: "12px", padding: "4px 10px", borderRadius: "6px", color: "#6E6E73", background: "transparent", border: "none", cursor: "pointer" }}>Reject</button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           )}
         </div>
+        <div style={{ height: "48px" }} />
       </main>
     </div>
   );

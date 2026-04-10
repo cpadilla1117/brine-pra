@@ -55,50 +55,72 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="border-b border-border bg-card">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
-          <div className="flex items-center gap-8">
+    <nav
+      className="sticky top-0 z-50 border-b"
+      style={{
+        background: "rgba(255,255,255,0.85)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderColor: "#E8E8ED",
+        borderWidth: "0 0 0.5px 0",
+        height: "52px",
+      }}
+    >
+      <div className="max-w-[1200px] mx-auto px-8 h-full flex items-center justify-between">
+        <Link
+          href="/dashboard"
+          className="font-mono text-[17px] font-semibold tracking-[0.08em]"
+          style={{ color: "#1D1D1F" }}
+        >
+          BRINE<span style={{ color: "#1D9E75" }}>.</span>
+        </Link>
+
+        <div className="flex items-center gap-8">
+          {links.map((link) => (
             <Link
-              href="/dashboard"
-              className="font-mono text-sm font-bold tracking-wider text-foreground"
+              key={link.href}
+              href={link.href}
+              className="transition-colors"
+              style={{
+                fontSize: "13px",
+                fontWeight: pathname === link.href ? 500 : 400,
+                color: pathname === link.href ? "#1D1D1F" : "#6E6E73",
+              }}
             >
-              BRINE
+              {link.label}
             </Link>
-            <div className="flex items-center gap-1">
-              {links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`px-3 py-1.5 text-sm rounded transition-colors ${
-                    pathname === link.href
-                      ? "bg-muted text-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            {profile && (
-              <>
-                <span className="text-xs text-muted-foreground font-mono">
-                  {profile.email}
-                </span>
-                <span className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground uppercase tracking-wider">
-                  {profile.role}
-                </span>
-              </>
-            )}
-            <button
-              onClick={handleSignOut}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Sign out
-            </button>
-          </div>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-4">
+          {profile && (
+            <>
+              <span style={{ fontSize: "13px", color: "#6E6E73" }}>
+                {profile.email}
+              </span>
+              <span
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 500,
+                  color: "#0A6B50",
+                  background: "#E8F7F2",
+                  padding: "3px 10px",
+                  borderRadius: "6px",
+                  border: "0.5px solid #1D9E75",
+                  textTransform: "uppercase",
+                }}
+              >
+                {profile.role}
+              </span>
+            </>
+          )}
+          <button
+            onClick={handleSignOut}
+            className="hover:underline"
+            style={{ fontSize: "13px", color: "#6E6E73", background: "none", border: "none", cursor: "pointer" }}
+          >
+            Sign out
+          </button>
         </div>
       </div>
     </nav>

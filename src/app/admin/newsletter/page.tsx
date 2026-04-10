@@ -17,6 +17,17 @@ const WEEK_OPTIONS = [
   { label: "12 weeks ago", value: -12 },
 ];
 
+const inputStyle: React.CSSProperties = {
+  padding: "8px 14px",
+  fontSize: "13px",
+  color: "#1D1D1F",
+  background: "#FAFAFA",
+  border: "0.5px solid #E8E8ED",
+  borderRadius: "8px",
+  outline: "none",
+  width: "220px",
+};
+
 export default function NewsletterPreviewPage() {
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<string | null>(null);
@@ -32,13 +43,9 @@ export default function NewsletterPreviewPage() {
   }, [weekOffset]);
 
   async function handleSend() {
-    if (!emailTo) {
-      setResult("Enter a recipient email address.");
-      return;
-    }
+    if (!emailTo) { setResult("Enter a recipient email address."); return; }
     setSending(true);
     setResult(null);
-
     try {
       const res = await fetch("/api/newsletter/send", {
         method: "POST",
@@ -46,31 +53,23 @@ export default function NewsletterPreviewPage() {
         body: JSON.stringify({ to: emailTo, weekOffset }),
       });
       const json = await res.json();
-      if (json.success) {
-        setResult(`Sent! ID: ${json.id}`);
-      } else {
-        setResult(`Error: ${json.error}`);
-      }
+      if (json.success) { setResult(`Sent! ID: ${json.id}`); }
+      else { setResult(`Error: ${json.error}`); }
     } catch (err) {
-      setResult(
-        `Failed: ${err instanceof Error ? err.message : "Unknown error"}`
-      );
-    } finally {
-      setSending(false);
-    }
+      setResult(`Failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+    } finally { setSending(false); }
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ background: "#F5F5F7" }}>
       <Navbar />
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-6">
+      <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 32px" }}>
+        <div className="flex items-center justify-between" style={{ padding: "40px 0 24px" }}>
           <div>
-            <h1 className="text-xl font-semibold">Newsletter Preview</h1>
+            <h1 style={{ fontSize: "28px", fontWeight: 300, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Newsletter Preview</h1>
             {data && (
-              <p className="text-sm text-muted-foreground mt-1">
-                Issue {data.issue_number} &middot; {data.publish_date} &middot;{" "}
-                {data.index_rows.length} index rows
+              <p style={{ fontSize: "13px", color: "#6E6E73", marginTop: "4px" }}>
+                Issue {data.issue_number} &middot; {data.publish_date} &middot; {data.index_rows.length} index rows
               </p>
             )}
           </div>
@@ -80,12 +79,22 @@ export default function NewsletterPreviewPage() {
               placeholder="test@example.com"
               value={emailTo}
               onChange={(e) => setEmailTo(e.target.value)}
-              className="px-3 py-2 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:border-accent-frac w-56"
+              style={inputStyle}
             />
             <button
               onClick={handleSend}
               disabled={sending}
-              className="px-4 py-2 bg-accent-frac text-background text-sm font-medium rounded hover:opacity-90 transition-opacity disabled:opacity-50"
+              style={{
+                padding: "8px 18px",
+                fontSize: "13px",
+                fontWeight: 500,
+                background: "#1D9E75",
+                color: "#FFFFFF",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                opacity: sending ? 0.5 : 1,
+              }}
             >
               {sending ? "Sending..." : "Send test email"}
             </button>
@@ -93,40 +102,38 @@ export default function NewsletterPreviewPage() {
         </div>
 
         {result && (
-          <div
-            className={`mb-4 text-sm px-4 py-3 rounded border ${
-              result.startsWith("Sent")
-                ? "border-accent-green/30 bg-accent-green/10 text-accent-green"
-                : "border-accent-red/30 bg-accent-red/10 text-accent-red"
-            }`}
-          >
+          <div style={{
+            marginBottom: "16px",
+            fontSize: "13px",
+            padding: "10px 16px",
+            borderRadius: "8px",
+            border: result.startsWith("Sent") ? "0.5px solid #9FE1CB" : "0.5px solid #FFD4D4",
+            background: result.startsWith("Sent") ? "#E8F5E9" : "#FFF5F5",
+            color: result.startsWith("Sent") ? "#1B5E20" : "#FF3B30",
+          }}>
             {result}
           </div>
         )}
 
         {/* Week selector */}
-        <div className="flex items-center gap-3 mb-4">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider">
-            Week:
-          </label>
+        <div className="flex items-center gap-3" style={{ marginBottom: "16px" }}>
+          <span style={{ fontSize: "11px", fontWeight: 500, color: "#AEAEB2", textTransform: "uppercase", letterSpacing: "0.06em" }}>Week:</span>
           <select
             value={weekOffset}
             onChange={(e) => setWeekOffset(Number(e.target.value))}
-            className="px-3 py-1.5 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:border-accent-frac"
+            style={{ ...inputStyle, width: "auto" }}
           >
             {WEEK_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
+              <option key={o.value} value={o.value}>{o.label}</option>
             ))}
           </select>
-          <span className="text-xs text-muted-foreground">
+          <span style={{ fontSize: "11px", color: "#AEAEB2" }}>
             {data && `${data.week_start} — ${data.week_end}`}
           </span>
         </div>
 
-        {/* Email preview iframe */}
-        <div className="border border-border rounded-lg overflow-hidden bg-white">
+        {/* Email preview */}
+        <div style={{ background: "#FFFFFF", border: "0.5px solid #E8E8ED", borderRadius: "16px", overflow: "hidden" }}>
           {html ? (
             <iframe
               srcDoc={html}
@@ -134,11 +141,12 @@ export default function NewsletterPreviewPage() {
               title="Newsletter preview"
             />
           ) : (
-            <div className="flex items-center justify-center h-48 text-sm text-muted-foreground">
+            <div className="flex items-center justify-center" style={{ height: "192px", fontSize: "13px", color: "#AEAEB2" }}>
               Rendering preview...
             </div>
           )}
         </div>
+        <div style={{ height: "48px" }} />
       </main>
     </div>
   );
