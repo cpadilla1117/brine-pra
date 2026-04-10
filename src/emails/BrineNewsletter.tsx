@@ -39,15 +39,15 @@ function gradePill(grade: string) {
 
 function deltaDisplay(delta: number | null) {
   if (delta === null || delta === 0)
-    return <span style={{ color: "#AEAEB2", fontSize: "12px", fontFamily: mono }}>—</span>;
+    return <span style={{ color: "#AEAEB2", fontSize: "13px", fontFamily: sans }}>—</span>;
   if (delta > 0)
     return (
-      <span style={{ color: "#1D9E75", fontSize: "12px", fontFamily: mono }}>
+      <span style={{ color: "#1D9E75", fontSize: "13px", fontFamily: sans, fontWeight: 400 }}>
         &#9650; ${delta.toFixed(2)}
       </span>
     );
   return (
-    <span style={{ color: "#FF3B30", fontSize: "12px", fontFamily: mono }}>
+    <span style={{ color: "#FF3B30", fontSize: "13px", fontFamily: sans, fontWeight: 400 }}>
       &#9660; ${Math.abs(delta).toFixed(2)}
     </span>
   );
@@ -207,7 +207,7 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
               <tbody>
                 <tr>
                   <td style={{ verticalAlign: "top" }}>
-                    <div style={{ fontFamily: mono, fontSize: "22px", fontWeight: 600, color: "#1D1D1F", letterSpacing: "0.08em" }}>
+                    <div style={{ fontFamily: mono, fontSize: "22px", fontWeight: 500, color: "#1D1D1F", letterSpacing: "0.08em" }}>
                       BRINE<span style={{ color: "#1D9E75" }}>.</span>
                     </div>
                   </td>
@@ -237,8 +237,8 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
               <tbody>
                 <tr>
                   <StatBox label="BASINS ACTIVE" value={String(basinsCovered)} context="publishing this week" border />
-                  <StatBox label="AVG FRAC-READY" value={`$${avgFracReady.toFixed(2)}`} context="volume-weighted avg" border price />
-                  <StatBox label="TOTAL VOLUME" value={formatVolumeTotal(totalVolume)} context="across all active basins" border volume />
+                  <StatBox label="AVG FRAC-READY" value={`$${avgFracReady.toFixed(2)}`} context="volume-weighted avg" border />
+                  <StatBox label="TOTAL VOLUME" value={formatVolumeTotal(totalVolume)} context="across all active basins" border />
                   <StatBox label="CONTRIBUTORS" value={String(totalReporters)} context="operators reporting" />
                 </tr>
               </tbody>
@@ -272,13 +272,13 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
                         {row.thin ? (
                           <span style={{ fontSize: "12px", color: "#AEAEB2", fontStyle: "italic" }}>Not enough data this week</span>
                         ) : (
-                          <span style={{ fontFamily: mono, fontSize: "15px", fontWeight: 600, color: "#1D1D1F" }}>${row.vwap?.toFixed(2)}</span>
+                          <span style={{ fontFamily: sans, fontSize: "15px", fontWeight: 500, color: "#1D1D1F" }}>${row.vwap?.toFixed(2)}</span>
                         )}
                       </td>
                       <td style={{ ...tdBase, textAlign: "right" }}>
                         {row.thin ? <span style={{ color: "#AEAEB2" }}>—</span> : deltaDisplay(row.delta)}
                       </td>
-                      <td style={{ ...tdBase, textAlign: "right", fontFamily: mono, fontSize: "13px", color: "#6E6E73" }}>
+                      <td style={{ ...tdBase, textAlign: "right", fontFamily: sans, fontSize: "13px", fontWeight: 400, color: "#6E6E73" }}>
                         {row.thin ? <span style={{ color: "#AEAEB2" }}>—</span> : formatVolume(row.volume_bbl_per_day ?? 0)}
                       </td>
                       <td style={{ ...tdBase, textAlign: "right", fontSize: "13px", color: "#AEAEB2" }}>
@@ -310,7 +310,7 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
                         return (
                           <td key={s.basin} style={{ background: "#F5F5F7", borderRadius: "12px", padding: "20px 24px", verticalAlign: "top" }}>
                             <div style={{ fontSize: "11px", color: "#AEAEB2", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px" }}>{s.basin}</div>
-                            <div style={{ fontFamily: mono, fontSize: "28px", fontWeight: 300, color: "#1D1D1F" }}>${s.spread.toFixed(2)}</div>
+                            <div style={{ fontFamily: sans, fontSize: "28px", fontWeight: 300, color: "#1D1D1F" }}>${s.spread.toFixed(2)}</div>
                             <div style={{ fontSize: "11px", color: dirColor, marginTop: "8px", lineHeight: "1.5" }}>{dirText}</div>
                           </td>
                         );
@@ -332,12 +332,12 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
                   <tbody>
                     <tr>
                       <td style={{ verticalAlign: "top" }}>
-                        <div style={{ fontFamily: mono, fontSize: "28px", fontWeight: 300, color: "#1D1D1F" }}>${deal.price_per_bbl.toFixed(2)}/BBL</div>
+                        <div style={{ fontFamily: sans, fontSize: "32px", fontWeight: 300, color: "#1D1D1F" }}>${deal.price_per_bbl.toFixed(2)}/BBL</div>
                         <div style={{ marginTop: "10px" }}>{gradePill(deal.grade)}</div>
                       </td>
                       <td style={{ textAlign: "right", verticalAlign: "top" }}>
                         <div style={{ fontSize: "12px", color: "#AEAEB2" }}>{deal.basin}</div>
-                        <div style={{ fontFamily: mono, fontSize: "14px", color: "#1D1D1F", fontWeight: 500, marginTop: "2px" }}>{formatVolume(deal.volume_bbl_per_day)}</div>
+                        <div style={{ fontFamily: sans, fontSize: "14px", color: "#1D1D1F", fontWeight: 500, marginTop: "2px" }}>{formatVolume(deal.volume_bbl_per_day)}</div>
                         <div style={{ fontSize: "11px", color: "#AEAEB2", marginTop: "2px" }}>Week of {deal.week_of}</div>
                       </td>
                     </tr>
@@ -412,7 +412,7 @@ export default function BrineNewsletter(props: BrineNewsletterData) {
               <tbody>
                 <tr>
                   <td style={{ verticalAlign: "top" }}>
-                    <div style={{ fontFamily: mono, fontSize: "15px", fontWeight: 600, color: "#1D1D1F" }}>BRINE<span style={{ color: "#1D9E75" }}>.</span></div>
+                    <div style={{ fontFamily: mono, fontSize: "15px", fontWeight: 500, color: "#1D1D1F" }}>BRINE<span style={{ color: "#1D9E75" }}>.</span></div>
                     <div style={{ fontSize: "11px", color: "#AEAEB2", marginTop: "3px" }}>The Water Price Reporting Agency</div>
                   </td>
                   <td style={{ textAlign: "right", verticalAlign: "top", fontSize: "12px", color: "#6E6E73" }}>
@@ -467,17 +467,15 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function StatBox({ label, value, context, border, price, volume }: { label: string; value: string; context: string; border?: boolean; price?: boolean; volume?: boolean }) {
-  const isCompact = price || volume;
+function StatBox({ label, value, context, border }: { label: string; value: string; context: string; border?: boolean }) {
   return (
     <td style={{ verticalAlign: "top", paddingRight: border ? "40px" : "0", borderRight: border ? "1px solid #E8E8ED" : "none", minWidth: "120px" }}>
       <div style={{ fontSize: "10px", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.08em", color: "#AEAEB2", whiteSpace: "nowrap" }}>{label}</div>
       <div style={{
-        fontFamily: price ? mono : sans,
-        fontSize: isCompact ? "26px" : "32px",
-        fontWeight: price ? 300 : 200,
+        fontFamily: sans,
+        fontSize: "28px",
+        fontWeight: 300,
         color: "#1D1D1F",
-        letterSpacing: price ? "-0.01em" : volume ? "-0.02em" : "-0.03em",
         lineHeight: "1",
         margin: "6px 0 4px",
         whiteSpace: "nowrap",
